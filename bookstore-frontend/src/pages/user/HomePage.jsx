@@ -1,36 +1,72 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { books, formatCurrency, testimonials } from "../../services/dataService";
+import { formatCurrency, testimonials } from "../../services/dataService"; 
 import { useCart } from "../../context/CartContext";
 import {
   ArrowRight,
-  ShoppingCart,
   Zap,
   ShieldCheck,
   ThumbsUp,
   Star,
   ChevronLeft,
   ChevronRight,
-  Heart,
-  Menu,
 } from "lucide-react";
 import BookCard from "../../components/common/BookCard";
+
 const HomePage = () => {
   const { addToCart } = useCart();
-  const bestSeller = books.find((b) => b.title === "Laskar Pelangi");
+  
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Ambil Data dari API
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/books");
+        const data = await response.json();
+        setBooks(data);
+      } catch (error) {
+        console.error("Gagal ambil buku:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBooks();
+  }, []);
+
+  // --- LOGIKA DATA ---
+  
+  // 1. Best Seller: Cari "Laskar Pelangi" atau ambil buku pertama
+  const bestSeller = books.find((b) => b.title.includes("Laskar Pelangi")) || books[0];
+
+  // 2. Special Offers (12 Buku Pertama)
   const specialOffers = books.slice(0, 12);
-  const flashSaleBooks = books.slice(4, 9);
-  const booksOnSale = [...books, ...books, ...books];
-  const featuredBooks = books.slice(0, 6);
-  const handleAddToCart = (e, book) => {
-    e.preventDefault(); // Prevent link navigation if inside a Link
-    addToCart({ ...book, quantity: 1 });
-  };
+
+  // 3. Flash Sale (Buku urutan ke-4 sampai 9)
+  const flashSaleBooks = books.length > 5 ? books.slice(4, 9) : books.slice(0, 5);
+
+  // 4. Books On Sale (Duplikasi agar grid penuh)
+  const booksOnSale = books.length > 0 ? [...books, ...books].slice(0, 18) : [];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FCFCFD]">
+        <div className="animate-pulse text-primary font-bold text-lg">Memuat Toko Buku...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#FCFCFD] font-sans overflow-x-hidden">
       <div className="container mx-auto max-w-[1600px] px-4 md:px-6">
+        
+        {/* HERO SECTION */}
         <section className="relative bg-[#F2F1FF] rounded-[32px] pt-12 pb-12 px-6 md:px-12 overflow-hidden mt-6 md:mt-8 mb-12 hover:shadow-lg transition-shadow duration-500">
           <div className="absolute right-0 top-0 w-full md:w-[45%] h-full bg-[#FF974A] rounded-l-none md:rounded-l-full transform translate-x-0 md:translate-x-1/3 transition-transform duration-1000 ease-out hover:translate-x-0 md:hover:translate-x-1/4 opacity-10 md:opacity-100"></div>
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Teks Kiri */}
             <div className="col-span-1 lg:col-span-7 animate-fade-in-up text-center lg:text-left">
               <div className="inline-block px-4 py-1.5 bg-white rounded-full text-primary font-bold text-[10px] md:text-[11px] tracking-[0.1em] uppercase mb-6 shadow-sm">
                 Back to School
@@ -42,8 +78,8 @@ const HomePage = () => {
                 for our student community
               </p>
               <p className="text-sm md:text-[15px] text-gray leading-relaxed max-w-md mb-8 mx-auto lg:mx-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+                Temukan buku pelajaran, novel inspiratif, dan peralatan sekolah dengan harga terbaik.
+                Mulai petualangan belajarmu hari ini.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-12 justify-center lg:justify-start">
                 <Link
@@ -64,28 +100,45 @@ const HomePage = () => {
                 <div className="w-2.5 h-2.5 rounded-full bg-primary/30"></div>
               </div>
             </div>
+            
+            {/* HERO PRODUCT CARD (PERBAIKAN: DIBUNGKUS LINK) */}
             <div className="col-span-1 lg:col-span-5 relative flex justify-center lg:justify-end pr-0 lg:pr-8 mt-4 lg:mt-0">
               <div className="relative bg-[#969696]/90 backdrop-blur-sm rounded-[28px] p-6 w-[280px] text-white text-center shadow-2xl transform transition-transform hover:-translate-y-2 hover:rotate-1 duration-500">
                 <h3 className="text-2xl font-bold mb-0.5">Best Seller</h3>
                 <p className="text-[11px] opacity-70 mb-5">Berdasarkan Penjualan Minggu ini</p>
-                <div className="bg-gray-300 rounded-2xl w-full h-[280px] mb-5 mx-auto border-[3px] border-white/20 shadow-inner overflow-hidden relative group">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  <div className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 opacity-80"></div>
-                </div>
-                <h4 className="text-lg font-bold mb-1 truncate px-2">
-                  {bestSeller?.title || "Laskar Pelangi"}
-                </h4>
-                <div className="text-[10px] uppercase tracking-wider opacity-60 mb-5 truncate px-2">
-                  {bestSeller?.tags?.join(" • ") || "Novel, Inspiratif"}
-                </div>
-                <div className="bg-white text-dark rounded-xl py-2.5 px-5 inline-flex items-center gap-3 font-bold shadow-lg text-sm group cursor-pointer hover:bg-gray-50 transition">
-                  <span className="text-gray line-through text-xs">
-                    {formatCurrency(bestSeller?.originalPrice || 125000)}
-                  </span>
-                  <span className="text-lg text-primary">
-                    {formatCurrency(bestSeller?.price || 89000)}
-                  </span>
-                </div>
+                
+                {/* --- BAGIAN INI SEKARANG BISA DIKLIK --- */}
+                {bestSeller ? (
+                  <Link to={`/book/${bestSeller.id}`} className="block group">
+                    <div className="bg-gray-300 rounded-2xl w-full h-[280px] mb-5 mx-auto border-[3px] border-white/20 shadow-inner overflow-hidden relative">
+                        <img 
+                            src={bestSeller.image} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                            alt={bestSeller.title} 
+                            onError={(e) => { e.target.src = "https://placehold.co/400x600?text=No+Cover"; }}
+                        />
+                    </div>
+
+                    <h4 className="text-lg font-bold mb-1 truncate px-2 group-hover:text-orange-200 transition-colors">
+                      {bestSeller.title}
+                    </h4>
+                    <div className="text-[10px] uppercase tracking-wider opacity-60 mb-5 truncate px-2">
+                      {bestSeller.category} • {bestSeller.author}
+                    </div>
+                    <div className="bg-white text-dark rounded-xl py-2.5 px-5 inline-flex items-center gap-3 font-bold shadow-lg text-sm group-hover:scale-105 transition-transform">
+                      <span className="text-gray line-through text-xs">
+                        {formatCurrency(bestSeller.price * 1.5)}
+                      </span>
+                      <span className="text-lg text-primary">
+                        {formatCurrency(bestSeller.price)}
+                      </span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center">Memuat...</div>
+                )}
+                {/* --------------------------------------- */}
+                
                 <button className="absolute top-1/2 -left-3 md:-left-5 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/40 backdrop-blur-md -translate-y-1/2 transition-all hover:scale-110 shadow-lg border border-white/20">
                   <ChevronLeft size={22} />
                 </button>
@@ -95,6 +148,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+          
           <div className="hidden md:block absolute bottom-0 left-[30%] w-56 h-28 bg-[#D8D6FF] rounded-t-full opacity-50 blur-3xl"></div>
           <div className="hidden md:grid absolute left-16 top-16 grid-cols-3 gap-1.5 opacity-40">
             {[...Array(9)].map((_, i) => (
@@ -105,6 +159,8 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+
+        {/* FEATURES */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-20">
           {[
             {
@@ -152,6 +208,8 @@ const HomePage = () => {
             </div>
           ))}
         </section>
+
+        {/* SPECIAL OFFERS */}
         <section className="mb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {specialOffers.map((book) => (
@@ -159,6 +217,8 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+
+        {/* FLASH SALE */}
         <section className="mb-20 py-12 rounded-[40px] bg-gradient-to-b from-[#FFF5F5] to-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute top-10 left-10 w-24 h-24 rounded-full bg-red-100 blur-2xl"></div>
@@ -198,6 +258,12 @@ const HomePage = () => {
                   <Link to={`/book/${book.id}`} className="block">
                     <div className="bg-white p-2 rounded-2xl shadow-sm group-hover:shadow-xl transition-all duration-300 mb-4 transform group-hover:-translate-y-2">
                       <div className="bg-gray-200 rounded-xl aspect-[2/3] overflow-hidden relative">
+                        <img 
+                            src={book.image} 
+                            alt={book.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {e.target.src = "https://placehold.co/400x600?text=No+Img"}}
+                        />
                         <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow">
                           HOT
                         </div>
@@ -214,7 +280,7 @@ const HomePage = () => {
                         {formatCurrency(book.price)}
                       </span>
                       <span className="text-[10px] md:text-xs text-gray line-through decoration-red-500/50">
-                        {formatCurrency(book.originalPrice)}
+                        {formatCurrency(book.price * 1.2)}
                       </span>
                     </div>
                   </Link>
@@ -223,6 +289,8 @@ const HomePage = () => {
             </div>
           </div>
         </section>
+
+        {/* BOOKS ON SALE */}
         <section className="mb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {booksOnSale.map((book, index) => (
@@ -230,6 +298,8 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+
+        {/* TESTIMONIALS */}
         <section className="text-center mb-20">
           <h2 className="text-3xl md:text-[40px] font-bold mb-4">Our Happy Customers</h2>
           <p className="text-gray text-[16px] mb-12 max-w-2xl mx-auto px-4">
@@ -298,4 +368,5 @@ const HomePage = () => {
     </div>
   );
 };
+
 export default HomePage;
