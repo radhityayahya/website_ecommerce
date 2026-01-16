@@ -1,0 +1,65 @@
+.navbar {
+  height: 80px;
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo span {
+  color: var(--text-main);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.nav-item {
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.nav-item:hover {
+  color: var(--primary);
+}
+
+.cart-btn {
+  color: var(--text-main);
+  transition: color 0.2s;
+}
+
+.cart-btn:hover {
+  color: var(--primary);
+}
+
+.relative { position: relative; }
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--secondary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.h-full { height: 100%; }
+.font-bold { font-weight: 700; }
+.text-xl { font-size: 1.25rem; }
+.text-sm { font-size: 0.875rem; }
+.font-medium { font-weight: 500; }

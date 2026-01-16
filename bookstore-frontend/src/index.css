@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@theme {
+  --color-primary: #6C5DD3;
+  --color-primary-light: #F2F1FF;
+  --color-secondary: #FF974A;
+  --color-secondary-light: #FFF0E6;
+  --color-dark: #0D0D0D;
+  --color-gray: #707070;
+  --color-muted: #A0A0A0;
+  --color-danger: #FF754C;
+  --color-success: #7FBA7A;
+  --color-background: #FCFCFD;
+  --color-surface: #FFFFFF;
+  
+  --shadow-soft: 0 4px 50px rgba(0,0,0,0.05);
+  
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-dark);
+  font-family: var(--font-sans);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold transition-all duration-200;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+}
+.btn-outline {
+  border: 2px solid var(--color-primary);
+  color: var(--color-dark);
+}
+.btn-outline:hover {
+  background-color: var(--color-primary-light);
+}
+
+/* Custom Scrollbar for aesthetic */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E4E4E4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D1D1D1;
+}
+
+/* Custom Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
